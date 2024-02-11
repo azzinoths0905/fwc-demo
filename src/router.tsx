@@ -3,6 +3,8 @@ import { DataUpload } from './pages/DataManagement/DataUpload';
 import { MenuProps } from 'antd';
 import _ from 'lodash';
 import { DemoLayout } from './Layout';
+import { DataOverview } from './pages/MetaDataManagement/DataOverview';
+import { TopKTableDiscovery } from './pages/JoinableTableDiscovery/TopKTableDiscovery';
 
 const pathKeyMap: Record<string, string | undefined> = {};
 const keyPathMap: Record<string, string | undefined> = {};
@@ -38,7 +40,7 @@ export const routeOptions: RouteOption[] = [
         label: '数据总览',
         key: 'data_overview',
         path: 'data_overview',
-        element: 'data_overview',
+        element: <DataOverview />,
       },
     ],
   },
@@ -51,7 +53,7 @@ export const routeOptions: RouteOption[] = [
         label: 'Top-K 表发现',
         key: 'top_k_table_discovery',
         path: 'top_k_table_discovery',
-        element: 'top_k_table_discovery',
+        element: <TopKTableDiscovery />,
       },
     ],
   },
