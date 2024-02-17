@@ -20,10 +20,12 @@ const dataSource: {
   column_detail?: string;
   type?: string;
   k?: number;
+  searchTitle?: string;
+  searchColumn?: string;
 }[] = [];
 
 Object.keys(data).forEach((key) => {
-  const [, , type, k] = key.split('|');
+  const [searchTitle, searchColumn, type, k] = key.split('|');
 
   dataSource.push(
     ...(
@@ -36,7 +38,14 @@ Object.keys(data).forEach((key) => {
         (dt) => dt.title === d.title && dt.column === d.column
       );
 
-      return { ...d, type, column_detail: detail?.column_detail, k: Number(k) };
+      return {
+        ...d,
+        type,
+        column_detail: detail?.column_detail,
+        k: Number(k),
+        searchTitle,
+        searchColumn,
+      };
     })
   );
 });
@@ -56,11 +65,11 @@ export const TopKTableDiscovery = () => {
           setSearching(true);
 
           const newData = dataSource.filter((d) => {
-            if (values.columnName && d.column !== values.columnName) {
+            if (values.columnName && d.searchColumn !== values.columnName) {
               return false;
             }
 
-            if (values.tableName && d.title !== values.tableName) {
+            if (values.tableName && d.searchTitle !== values.tableName) {
               return false;
             }
 
