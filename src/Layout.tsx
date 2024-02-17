@@ -24,7 +24,7 @@ export const DemoLayout = () => {
         className="px-4 bg-white border-b border-gray-200"
         style={{ borderBottomStyle: 'solid' }}
       >
-        <div>Header</div>
+        <div style={{ fontSize: 18 }}>Joinable 表发现系统</div>
       </Layout.Header>
       <Layout>
         <Layout.Sider>
