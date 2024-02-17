@@ -57,6 +57,7 @@ export const DataUpload = () => {
             setSubmitting(true);
             setTimeout(() => {
               setSubmitting(false);
+              form.resetFields();
               message.success('提交成功');
             }, Math.random() * 0.8 * 1000 + 200);
           }}
