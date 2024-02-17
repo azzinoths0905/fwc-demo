@@ -1,8 +1,8 @@
 {
-  "table1|col1|equi|1": [
+  "MOCK TABLE 1|first_name|equi|5": [
     {
-      "title": "表名 1",
-      "column": "列名 1",
+      "title": "MOCK TABLE 1",
+      "column": "first_name",
       "path": "路径 1"
     },
     {

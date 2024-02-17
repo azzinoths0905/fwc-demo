@@ -1,7 +1,7 @@
 [
   {
-    "title": "表名 1",
-    "column": "列名 1",
+    "title": "MOCK TABLE 1",
+    "column": "first_name",
     "column_detail": "这是表名 1 的详细信息"
   },
   {

@@ -2,6 +2,7 @@ import { Button, Form, InputNumber, Modal, Radio, Select, Table } from 'antd';
 
 import data from '../../../data/top-k-result.json';
 import details from '../../../data/top-k-column-details.json';
+import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
 
@@ -49,36 +50,96 @@ export const TopKTableDiscovery = () => {
 
   return (
     <div>
-      <Form<FormFields> form={form}>
+      <Form<FormFields>
+        form={form}
+        onFinish={(values) => {
+          setSearching(true);
+
+          const newData = dataSource.filter((d) => {
+            if (values.columnName && d.column !== values.columnName) {
+              return false;
+            }
+
+            if (values.tableName && d.title !== values.tableName) {
+              return false;
+            }
+
+            if (_.isNumber(values.resultCount) && d.k !== values.resultCount) {
+              return false;
+            }
+
+            if (values.searchMode !== d.type) {
+              return false;
+            }
+
+            return true;
+          });
+
+          setTimeout(() => {
+            setFilteredDataSource(newData);
+            setSearching(false);
+          }, Math.random() * 0.8 * 1000 + 200);
+        }}
+        onValuesChange={(changedValue) => {
+          if ('tableName' in changedValue) {
+            form.resetFields(['columnName']);
+          }
+        }}
+      >
         <div className="flex flex-wrap justify-between w-full">
           <div className="flex gap-4">
-            <Form.Item name="tableName" label="表名" className="w-52">
+            <Form.Item
+              name="tableName"
+              label="表名"
+              className="w-52"
+              rules={[{ required: true, message: '请选择表名' }]}
+            >
               <Select
                 showSearch
                 placeholder="请选择表名"
                 options={_.compact(
                   _.uniq(
-                    dataSource.map((d) => ({ label: d.title, value: d.title }))
+                    tables.map((t) => ({ label: t.title, value: t.title }))
                   )
                 )}
               />
             </Form.Item>
-            <Form.Item name="columnName" label="列名" className="w-52">
-              <Select
-                showSearch
-                placeholder="请选择列名"
-                options={_.compact(
-                  _.uniq(
-                    dataSource.map((d) => ({
-                      label: d.column,
-                      value: d.column,
-                    }))
-                  )
-                )}
-              />
+            <Form.Item dependencies={['tableName']}>
+              {({ getFieldValue }) => {
+                const tableName = getFieldValue('tableName');
+                const { columns = [] } =
+                  tables.find((t) => t.title === tableName) || {};
+
+                return (
+                  <Form.Item
+                    name="columnName"
+                    label="列名"
+                    className="w-52"
+                    rules={[{ required: true, message: '请选择列名' }]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="请选择列名"
+                      disabled={!tableName}
+                      options={_.compact(
+                        _.uniq(
+                          columns.map((c) => ({
+                            label: c,
+                            value: c,
+                          }))
+                        )
+                      )}
+                    />
+                  </Form.Item>
+                );
+              }}
             </Form.Item>
-            <Form.Item name="resultCount" label="结果集数量">
-              <InputNumber />
+            <Form.Item
+              name="resultCount"
+              label="结果集数量"
+              rules={[{ required: true, message: '请输入结果集数量' }]}
+            >
+              <InputNumber min={0} />
             </Form.Item>
           </div>
           <div className="flex gap-4">
@@ -95,43 +156,7 @@ export const TopKTableDiscovery = () => {
             >
               重置
             </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                setSearching(true);
-
-                const value = form.getFieldsValue();
-
-                const newData = dataSource.filter((d) => {
-                  if (value.columnName && d.column !== value.columnName) {
-                    return false;
-                  }
-
-                  if (value.tableName && d.title !== value.tableName) {
-                    return false;
-                  }
-
-                  if (
-                    _.isNumber(value.resultCount) &&
-                    d.k !== value.resultCount
-                  ) {
-                    return false;
-                  }
-
-                  if (value.searchMode !== d.type) {
-                    return false;
-                  }
-
-                  return true;
-                });
-
-                setTimeout(() => {
-                  setFilteredDataSource(newData);
-                  setSearching(false);
-                }, Math.random() * 0.8 * 1000 + 200);
-              }}
-              loading={searching}
-            >
+            <Button type="primary" htmlType="submit" loading={searching}>
               搜索
             </Button>
           </div>
