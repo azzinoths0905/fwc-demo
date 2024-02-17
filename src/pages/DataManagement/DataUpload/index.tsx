@@ -2,7 +2,7 @@ import { InboxOutlined } from '@ant-design/icons';
 import { Button, Form, Upload, UploadFile, message } from 'antd';
 import { MOCK_UPLOAD_ACTION } from '../../../const';
 import { UploadChangeParam } from 'antd/es/upload';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import _ from 'lodash';
 
 const normFile = (e: UploadChangeParam<UploadFile<any>>): UploadFile[] => {
