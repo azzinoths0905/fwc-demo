@@ -2,6 +2,8 @@ import { InboxOutlined } from '@ant-design/icons';
 import { Button, Form, Upload, UploadFile, message } from 'antd';
 import { MOCK_UPLOAD_ACTION } from '../../../const';
 import { UploadChangeParam } from 'antd/es/upload';
+import { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 const normFile = (e: UploadChangeParam<UploadFile<any>>): UploadFile[] => {
   if (Array.isArray(e)) {
@@ -11,13 +13,19 @@ const normFile = (e: UploadChangeParam<UploadFile<any>>): UploadFile[] => {
 };
 
 export const DataUpload = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [form] = Form.useForm();
+
+  const fileList = Form.useWatch('fileList', form);
+
   return (
-    <Form>
+    <Form form={form}>
       <Form.Item
         noStyle
         valuePropName="fileList"
         name="fileList"
         getValueFromEvent={normFile}
+        rules={[{ required: true }]}
       >
         <Upload.Dragger
           name="file"
@@ -42,7 +50,19 @@ export const DataUpload = () => {
         </Upload.Dragger>
       </Form.Item>
       <div className="flex flex-row-reverse mt-4">
-        <Button className="bg-[var(--ant-color-primary)]" type="primary">
+        <Button
+          type="primary"
+          htmlType="submit"
+          onClick={() => {
+            setSubmitting(true);
+            setTimeout(() => {
+              setSubmitting(false);
+              message.success('提交成功');
+            }, Math.random() * 0.8 * 1000 + 200);
+          }}
+          loading={submitting}
+          disabled={!fileList || !_.isArray(fileList) || !fileList.length}
+        >
           提交
         </Button>
       </div>

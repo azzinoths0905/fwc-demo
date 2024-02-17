@@ -1,4 +1,4 @@
-import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import { Navigate, RouteObject, createBrowserRouter } from 'react-router-dom';
 import { DataUpload } from './pages/DataManagement/DataUpload';
 import { MenuProps } from 'antd';
 import _ from 'lodash';
@@ -9,12 +9,15 @@ import { TopKTableDiscovery } from './pages/JoinableTableDiscovery/TopKTableDisc
 const pathKeyMap: Record<string, string | undefined> = {};
 const keyPathMap: Record<string, string | undefined> = {};
 
+export const FALLBACK_PATH = '/meta_data_management/data_overview';
+
 export interface RouteOption {
   label: string;
   key: string;
   path?: string;
   element?: RouteObject['element'];
   children?: RouteOption[];
+  hidden?: boolean;
 }
 
 export const routeOptions: RouteOption[] = [
@@ -57,6 +60,13 @@ export const routeOptions: RouteOption[] = [
       },
     ],
   },
+  {
+    label: 'fallback',
+    key: 'fallback',
+    path: '*',
+    element: <Navigate to={FALLBACK_PATH} />,
+    hidden: true,
+  },
 ];
 
 const buildRouteObject = (
@@ -89,7 +99,13 @@ const buildMenuItems = (
     return undefined;
   }
 
-  return origin.map((o) => {
+  const result: MenuProps['items'] = [];
+
+  origin.forEach((o) => {
+    if (o.hidden) {
+      return;
+    }
+
     const path = o.path ? `${pathPrefix}/${_.trim(o.path, '/')}` : undefined;
 
     if (path) {
@@ -97,13 +113,15 @@ const buildMenuItems = (
       keyPathMap[o.key] = path;
     }
 
-    return {
+    result.push({
       label: o.label,
       key: o.key,
       type: o.element ? undefined : 'group',
       children: buildMenuItems(o.children, path),
-    };
+    });
   });
+
+  return result;
 };
 
 export const menuItems = buildMenuItems(routeOptions);
