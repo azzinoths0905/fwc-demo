@@ -126,7 +126,6 @@
     "path": "/asda/asda/sdasaad",
     "columns": [
       "first_name",
-      "last_name",
       "email"
     ],
     "data": [
