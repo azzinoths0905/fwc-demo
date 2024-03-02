@@ -5,6 +5,8 @@ import details from '../../../data/top-k-column-details.json';
 import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
+import { DownloadOutlined, MenuOutlined } from '@ant-design/icons';
+import downloadRows from '../../../data/download-rows.json';
 
 interface FormFields {
   tableName?: string;
@@ -197,21 +199,66 @@ export const TopKTableDiscovery = () => {
             width: 200,
             render: (_, record) => {
               return (
-                <Button
-                  className="px-0"
-                  type="link"
-                  disabled={!record.column_detail}
-                  onClick={() => {
-                    Modal.info({
-                      title: `${record.column} 详情`,
-                      icon: null,
-                      content: record.column_detail,
-                      width: 800,
-                    });
-                  }}
-                >
-                  查看详情
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    size="small"
+                    icon={<MenuOutlined />}
+                    className="px-0"
+                    type="link"
+                    disabled={!record.column_detail}
+                    onClick={() => {
+                      Modal.info({
+                        title: `${record.column} 详情`,
+                        icon: null,
+                        content: record.column_detail,
+                        width: 800,
+                      });
+                    }}
+                  >
+                    查看详情
+                  </Button>
+                  <Button
+                    size="small"
+                    icon={<DownloadOutlined />}
+                    className="px-0"
+                    type="link"
+                    disabled={!record.column_detail}
+                    onClick={() => {
+                      const rows = [
+                        [
+                          'table',
+                          'column',
+                          'server_ip',
+                          'server_name',
+                          'port',
+                          'data_source_type',
+                          'column_detail',
+                        ],
+                        ...downloadRows,
+                      ];
+
+                      const csvContent =
+                        'data:text/csv;charset=utf-8,' +
+                        rows.map((e) => e.join(',')).join('\n');
+
+                      const encodedUri = encodeURI(csvContent);
+
+                      const downloadLink = document.createElement('a');
+                      downloadLink.href = encodedUri;
+                      downloadLink.download = `${[
+                        record.title,
+                        record.column,
+                        record.k,
+                        record.type,
+                      ].join('_')}.csv`;
+                      document.body.appendChild(downloadLink);
+                      downloadLink.click();
+                      document.body.removeChild(downloadLink);
+                    }}
+                  >
+                    下载
+                  </Button>
+                </div>
               );
             },
           },
