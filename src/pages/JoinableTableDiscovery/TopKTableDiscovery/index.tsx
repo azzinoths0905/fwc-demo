@@ -6,6 +6,7 @@ import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
 import { DownloadOutlined, MenuOutlined } from '@ant-design/icons';
+import downloadRows from '../../../data/download_rows.json';
 
 interface FormFields {
   tableName?: string;
@@ -222,7 +223,38 @@ export const TopKTableDiscovery = () => {
                     className="px-0"
                     type="link"
                     disabled={!record.column_detail}
-                    onClick={() => {}}
+                    onClick={() => {
+                      const rows = [
+                        [
+                          'table',
+                          'column',
+                          'server_ip',
+                          'server_name',
+                          'port',
+                          'data_source_type',
+                          'column_detail',
+                        ],
+                        ...downloadRows,
+                      ];
+
+                      const csvContent =
+                        'data:text/csv;charset=utf-8,' +
+                        rows.map((e) => e.join(',')).join('\n');
+
+                      const encodedUri = encodeURI(csvContent);
+
+                      const downloadLink = document.createElement('a');
+                      downloadLink.href = encodedUri;
+                      downloadLink.download = `${[
+                        record.title,
+                        record.column,
+                        record.k,
+                        record.type,
+                      ].join('_')}.csv`;
+                      document.body.appendChild(downloadLink);
+                      downloadLink.click();
+                      document.body.removeChild(downloadLink);
+                    }}
                   >
                     下载
                   </Button>
