@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "server_ip": "127.0.0.1",
+    "server_name": "LOCAL",
+    "port": "8000",
+    "type": "A"
+  },
+  {
+    "id": "2",
+    "server_ip": "127.0.0.2",
+    "server_name": "LOCAL",
+    "port": "8000",
+    "type": "B"
+  }
+]

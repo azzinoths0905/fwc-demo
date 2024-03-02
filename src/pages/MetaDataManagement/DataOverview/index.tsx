@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { MenuOutlined, SearchOutlined } from '@ant-design/icons';
 
 import data from '../../../data/tables.json';
-import { DeleteButton } from './DeleteButton';
+import { DeleteButton } from '../../../components/DeleteButton';
 
 interface FormFields {
   tableName?: string;

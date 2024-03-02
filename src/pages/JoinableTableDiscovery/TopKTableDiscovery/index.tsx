@@ -6,7 +6,7 @@ import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
 import { DownloadOutlined, MenuOutlined } from '@ant-design/icons';
-import downloadRows from '../../../data/download_rows.json';
+import downloadRows from '../../../data/download-rows.json';
 
 interface FormFields {
   tableName?: string;
