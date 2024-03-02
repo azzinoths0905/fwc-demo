@@ -31,7 +31,7 @@ export const DataUpload = () => {
           name="file"
           multiple
           action={MOCK_UPLOAD_ACTION}
-          accept=".csv"
+          accept=".csv, .json, .parquet, .xml"
           className="h-80"
           beforeUpload={(file) => {
             if (file.size > 20000) {
@@ -45,7 +45,7 @@ export const DataUpload = () => {
           </p>
           <p className="ant-upload-text">将文件拖到本区域或点击上传</p>
           <p className="ant-upload-hint">
-            我们接受以下分隔符：逗号、分号和制表符。最大支持 20 MB
+            我们接受以下格式：CSV, JSON, Parquet, XML。最大支持 20 MB
           </p>
         </Upload.Dragger>
       </Form.Item>

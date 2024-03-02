@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { DemoLayout } from './Layout';
 import { DataOverview } from './pages/MetaDataManagement/DataOverview';
 import { TopKTableDiscovery } from './pages/JoinableTableDiscovery/TopKTableDiscovery';
+import { DataSourceManagement } from './pages/DataManagement/DataSourceManagement';
 
 const pathKeyMap: Record<string, string | undefined> = {};
 const keyPathMap: Record<string, string | undefined> = {};
@@ -26,6 +27,12 @@ export const routeOptions: RouteOption[] = [
     key: 'data_management',
     path: '/data_management',
     children: [
+      {
+        label: '数据源管理',
+        key: 'data_source_management',
+        path: 'data_source_management',
+        element: <DataSourceManagement />,
+      },
       {
         label: '数据上传',
         key: 'data_upload',

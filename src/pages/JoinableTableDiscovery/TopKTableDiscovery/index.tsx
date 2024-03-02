@@ -5,6 +5,7 @@ import details from '../../../data/top-k-column-details.json';
 import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
+import { DownloadOutlined, MenuOutlined } from '@ant-design/icons';
 
 interface FormFields {
   tableName?: string;
@@ -197,21 +198,35 @@ export const TopKTableDiscovery = () => {
             width: 200,
             render: (_, record) => {
               return (
-                <Button
-                  className="px-0"
-                  type="link"
-                  disabled={!record.column_detail}
-                  onClick={() => {
-                    Modal.info({
-                      title: `${record.column} 详情`,
-                      icon: null,
-                      content: record.column_detail,
-                      width: 800,
-                    });
-                  }}
-                >
-                  查看详情
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    size="small"
+                    icon={<MenuOutlined />}
+                    className="px-0"
+                    type="link"
+                    disabled={!record.column_detail}
+                    onClick={() => {
+                      Modal.info({
+                        title: `${record.column} 详情`,
+                        icon: null,
+                        content: record.column_detail,
+                        width: 800,
+                      });
+                    }}
+                  >
+                    查看详情
+                  </Button>
+                  <Button
+                    size="small"
+                    icon={<DownloadOutlined />}
+                    className="px-0"
+                    type="link"
+                    disabled={!record.column_detail}
+                    onClick={() => {}}
+                  >
+                    下载
+                  </Button>
+                </div>
               );
             },
           },
