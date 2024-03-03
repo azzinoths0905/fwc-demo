@@ -45,8 +45,12 @@ export const DataOverview = () => {
             dataIndex: 'title',
           },
           {
-            title: '路径',
-            dataIndex: 'path',
+            title: '数据源类型',
+            dataIndex: 'dataType',
+          },
+          {
+            title: '来源服务器名称',
+            dataIndex: 'serverName',
           },
           {
             title: '操作',
