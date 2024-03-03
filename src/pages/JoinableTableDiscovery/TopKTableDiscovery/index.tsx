@@ -173,12 +173,19 @@ export const TopKTableDiscovery = () => {
               disabled={!filteredDataSource.length}
               onClick={() => {
                 const rows = [
-                  ['table', 'column', 'server_name', 'data_type'],
+                  [
+                    'table',
+                    'column',
+                    'server_name',
+                    'data_type',
+                    'column_detail',
+                  ],
                   ...filteredDataSource.map((d) => [
                     d.title,
                     d.column,
                     d.serverName,
                     d.dataType,
+                    d.column_detail,
                   ]),
                 ];
 
