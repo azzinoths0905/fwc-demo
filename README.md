@@ -17,3 +17,10 @@ pnpm i
 ```shell
 pnpm dev
 ```
+
+# 工具函数
+
+以下函数可以在浏览器的 console 里直接调用来实现一些便捷能力：
+
+1. 重置「数据总览」缓存：`initDataOverview()`
+2. 重置「数据源管理」缓存：`initDataSourceManagement()`

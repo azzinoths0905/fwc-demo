@@ -1,9 +1,14 @@
-import { DeleteOutlined, EditOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button, Drawer, Form, Input, Modal, Table, message } from 'antd';
+import { Button, Drawer, Form, Input, message, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { EditOutlined, SyncOutlined } from '@ant-design/icons';
+
 import { DeleteButton } from '../../../components/DeleteButton';
-import localData from '../../../data/data-source-table.json';
+import {
+  getDataSourceList,
+  setDataSourceList,
+} from '../../../store/dataSourceManagement';
 
 interface RegisterFormData {
   id?: string;
@@ -19,20 +24,23 @@ const FormItem = Form.Item<RegisterFormData>;
 export const DataSourceManagement = () => {
   const [currentTarget, setCurrentTarget] = useState<string | null>(null);
 
-  const [dataSource, setDataSource] = useState<RegisterFormData[]>(
-    localData.map((d) => ({
-      id: d.id,
-      serverIp: d.server_ip,
-      serverName: d.server_name,
-      port: d.port,
-      type: d.type,
-    }))
-  );
+  const [dataSource, setDataSource] = useState<RegisterFormData[]>([]);
 
   const [form] = Form.useForm<RegisterFormData>();
 
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const refresh = async () => {
+    setLoading(true);
+    const values = await getDataSourceList();
+    setDataSource(values);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   useEffect(() => {
     if (currentTarget === null) {
@@ -97,14 +105,12 @@ export const DataSourceManagement = () => {
                       编辑
                     </Button>
                     <DeleteButton
-                      onSuccess={() => {
-                        setLoading(true);
-                        setTimeout(() => {
-                          setDataSource((prev) =>
-                            prev.filter((d) => d.id !== record.id)
-                          );
-                          setLoading(false);
-                        }, Math.random() * 1000 + 300);
+                      onSuccess={async () => {
+                        await setDataSourceList(
+                          dataSource.filter((d) => d.id !== record.id)
+                        );
+
+                        refresh();
                       }}
                     />
                     <Button
@@ -147,27 +153,20 @@ export const DataSourceManagement = () => {
           form={form}
           layout="vertical"
           className="flex flex-col justify-between h-full"
-          onFinish={(values) => {
+          onFinish={async (values) => {
             setSubmitting(true);
 
-            setTimeout(() => {
-              setDataSource((prev) => {
-                if (prev.some((d) => d.id === values.id)) {
-                  return prev.map((d) => (d.id === values.id ? values : d));
-                }
-                return [...prev, values];
-              });
+            const newData = dataSource.some((d) => d.id === values.id)
+              ? dataSource.map((d) => (d.id === values.id ? values : d))
+              : [...dataSource, values];
 
-              message.success('提交成功');
+            await setDataSourceList(newData);
 
-              setSubmitting(false);
-              setCurrentTarget(null);
-              setLoading(true);
+            message.success('提交成功');
+            setSubmitting(false);
+            setCurrentTarget(null);
 
-              setTimeout(() => {
-                setLoading(false);
-              }, Math.random() * 1000 + 300);
-            }, Math.random() * 1000 + 300);
+            refresh();
           }}
         >
           <div>

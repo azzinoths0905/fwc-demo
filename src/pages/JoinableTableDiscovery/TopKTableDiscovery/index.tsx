@@ -6,7 +6,6 @@ import tables from '../../../data/tables.json';
 import _ from 'lodash';
 import { useState } from 'react';
 import { DownloadOutlined, MenuOutlined } from '@ant-design/icons';
-import downloadRows from '../../../data/download-rows.json';
 
 interface FormFields {
   tableName?: string;
@@ -18,7 +17,8 @@ interface FormFields {
 const dataSource: {
   title?: string;
   column?: string;
-  path?: string;
+  serverName?: string;
+  dataType?: string;
   column_detail?: string;
   type?: string;
   k?: number;
@@ -33,7 +33,12 @@ Object.keys(data).forEach((key) => {
     ...(
       data as Record<
         string,
-        { title?: string; column?: string; path?: string }[]
+        {
+          title?: string;
+          column?: string;
+          serverName?: string;
+          dataType?: string;
+        }[]
       >
     )[key].map((d) => {
       const detail = details.find(
@@ -55,7 +60,9 @@ Object.keys(data).forEach((key) => {
 export const TopKTableDiscovery = () => {
   const [form] = Form.useForm<FormFields>();
 
-  const [filteredDataSource, setFilteredDataSource] = useState(dataSource);
+  const [filteredDataSource, setFilteredDataSource] = useState<
+    typeof dataSource
+  >([]);
 
   const [searching, setSearching] = useState(false);
 
@@ -161,8 +168,46 @@ export const TopKTableDiscovery = () => {
               </Radio.Group>
             </Form.Item>
             <Button
+              icon={<DownloadOutlined />}
+              className="px-0"
+              disabled={!filteredDataSource.length}
+              onClick={() => {
+                const rows = [
+                  ['table', 'column', 'server_name', 'data_type'],
+                  ...filteredDataSource.map((d) => [
+                    d.title,
+                    d.column,
+                    d.serverName,
+                    d.dataType,
+                  ]),
+                ];
+
+                const csvContent =
+                  'data:text/csv;charset=utf-8,' +
+                  rows.map((e) => e.join(',')).join('\n');
+
+                const encodedUri = encodeURI(csvContent);
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = encodedUri;
+
+                const values = form.getFieldsValue();
+
+                downloadLink.download = `${[
+                  values.tableName,
+                  values.columnName,
+                  values.resultCount,
+                  values.searchMode,
+                ].join('_')}.csv`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+              }}
+            />
+            <Button
               onClick={() => {
                 form.resetFields();
+                setFilteredDataSource([]);
               }}
             >
               重置
@@ -190,8 +235,12 @@ export const TopKTableDiscovery = () => {
             dataIndex: 'column',
           },
           {
-            title: '路径',
-            dataIndex: 'path',
+            title: '数据源类型',
+            dataIndex: 'dataType',
+          },
+          {
+            title: '来源服务器名称',
+            dataIndex: 'serverName',
           },
           {
             title: '操作',
@@ -216,47 +265,6 @@ export const TopKTableDiscovery = () => {
                     }}
                   >
                     查看详情
-                  </Button>
-                  <Button
-                    size="small"
-                    icon={<DownloadOutlined />}
-                    className="px-0"
-                    type="link"
-                    disabled={!record.column_detail}
-                    onClick={() => {
-                      const rows = [
-                        [
-                          'table',
-                          'column',
-                          'server_ip',
-                          'server_name',
-                          'port',
-                          'data_source_type',
-                          'column_detail',
-                        ],
-                        ...downloadRows,
-                      ];
-
-                      const csvContent =
-                        'data:text/csv;charset=utf-8,' +
-                        rows.map((e) => e.join(',')).join('\n');
-
-                      const encodedUri = encodeURI(csvContent);
-
-                      const downloadLink = document.createElement('a');
-                      downloadLink.href = encodedUri;
-                      downloadLink.download = `${[
-                        record.title,
-                        record.column,
-                        record.k,
-                        record.type,
-                      ].join('_')}.csv`;
-                      document.body.appendChild(downloadLink);
-                      downloadLink.click();
-                      document.body.removeChild(downloadLink);
-                    }}
-                  >
-                    下载
                   </Button>
                 </div>
               );
