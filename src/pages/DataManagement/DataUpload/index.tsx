@@ -4,6 +4,10 @@ import { MOCK_UPLOAD_ACTION } from '../../../const';
 import { UploadChangeParam } from 'antd/es/upload';
 import { useState } from 'react';
 import _ from 'lodash';
+import {
+  getDataSourceList,
+  setDataSourceList,
+} from '../../../store/dataSourceManagement';
 
 const normFile = (e: UploadChangeParam<UploadFile<any>>): UploadFile[] => {
   if (Array.isArray(e)) {
@@ -19,7 +23,32 @@ export const DataUpload = () => {
   const fileList = Form.useWatch('fileList', form);
 
   return (
-    <Form form={form}>
+    <Form
+      form={form}
+      onFinish={async (values) => {
+        setSubmitting(true);
+        const fileNames: string[] = _.compact(
+          values?.fileList?.map((f: any) => f?.name)
+        );
+
+        const draft = await getDataSourceList();
+        fileNames.forEach((name) => {
+          draft.push({
+            id: `${_.round(Math.random() * 1000)}${Date.now()}`,
+            serverIp: '127.0.0.1',
+            serverName: 'LOCAL',
+            port: '3000',
+            type: _.last(name.split('.')),
+            extra: `name=${name}`,
+          });
+        });
+        await setDataSourceList(draft);
+
+        form.resetFields();
+        message.success('提交成功');
+        setSubmitting(false);
+      }}
+    >
       <Form.Item
         noStyle
         valuePropName="fileList"
@@ -53,14 +82,6 @@ export const DataUpload = () => {
         <Button
           type="primary"
           htmlType="submit"
-          onClick={() => {
-            setSubmitting(true);
-            setTimeout(() => {
-              setSubmitting(false);
-              form.resetFields();
-              message.success('提交成功');
-            }, Math.random() * 0.8 * 1000 + 200);
-          }}
           loading={submitting}
           disabled={!fileList || !_.isArray(fileList) || !fileList.length}
         >

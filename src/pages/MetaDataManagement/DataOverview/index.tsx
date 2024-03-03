@@ -1,23 +1,42 @@
 import { Button, Form, Input, Modal, Table } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { MenuOutlined, SearchOutlined } from '@ant-design/icons';
 
 import data from '../../../data/tables.json';
 import { DeleteButton } from '../../../components/DeleteButton';
+import {
+  getDataOverviewDeleteKeys,
+  setDataOverviewDeleteKeys,
+} from '../../../store/dataOverview';
 
 interface FormFields {
   tableName?: string;
 }
 
 export const DataOverview = () => {
-  const [deletedKeys, setDeletedKeys] = useState<string[]>([]);
+  const [deletedKeys, setDeletedKeys] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const refresh = async () => {
+    setLoading(true);
+    const keys = await getDataOverviewDeleteKeys();
+    setDeletedKeys(keys);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const [form] = Form.useForm<FormFields>();
   const tableName = Form.useWatch('tableName', form);
 
   const dataSource = useMemo(() => {
+    if (deletedKeys === null) {
+      return [];
+    }
+
     const dataNotDeleted = data.filter((d) => !deletedKeys.includes(d.title));
 
     if (!tableName?.length) {
@@ -85,12 +104,12 @@ export const DataOverview = () => {
                     查看详情
                   </Button>
                   <DeleteButton
-                    onSuccess={() => {
-                      setLoading(true);
-                      setTimeout(() => {
-                        setDeletedKeys((prev) => [...prev, record.title]);
-                        setLoading(false);
-                      }, Math.random() * 1000 + 300);
+                    onSuccess={async () => {
+                      await setDataOverviewDeleteKeys([
+                        ...(deletedKeys || []),
+                        record.title,
+                      ]);
+                      refresh();
                     }}
                   />
                 </div>

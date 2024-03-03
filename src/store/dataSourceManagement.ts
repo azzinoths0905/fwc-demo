@@ -35,3 +35,7 @@ export const setDataSourceList = (data: DataSourceItem[]) => {
     }, Math.random() * 1000 + 300);
   });
 };
+
+(window as any).initDataSourceManagement = () => {
+  localStorage.removeItem(LOCAL_KEY);
+};
